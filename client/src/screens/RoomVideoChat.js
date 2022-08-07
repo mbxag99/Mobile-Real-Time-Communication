@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Dimensions, ScrollView, View } from "react-native";
 import { Text } from "react-native-elements";
 import { io } from "socket.io-client";
+import { Peer } from "peerjs";
 const { width: WINDOW_WIDTH, height: WINDOW_HEIGHT } = Dimensions.get("window");
 
 export default function RoomVideoChat() {

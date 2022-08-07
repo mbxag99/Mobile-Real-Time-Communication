@@ -1,5 +1,7 @@
 const express = require("express");
 const cors = require("cors");
+const { ExpressPeerServer } = require("peer");
+
 let users = [];
 const app = express();
 const server = require("http").Server(app);
@@ -11,19 +13,13 @@ const io = require("socket.io")(server, {
 });
 
 const port = 3001;
-const addUser = (userName, roomId) => {
-  users.push({
-    username: userName,
-    roomID: roomId,
-  });
-};
-const removeUser = (userName, roomId) => {
-  users = users.filter((user) => user.username != userName);
-};
-const getRoomUsers = (roomId) => {
-  return users.filter((user) => user.roomID == roomId);
-};
 app.use(cors());
+
+const peerServer = ExpressPeerServer(server, {
+  debug: true,
+});
+
+app.use("/peerjs", peerServer);
 
 app.get("/", (req, res) => {
   res.send("hello worlds");
@@ -32,6 +28,7 @@ app.get("/", (req, res) => {
 io.on("connection", (socket) => {
   console.log("Someone connected");
   socket.on("join-room", ({ roomId, userName }) => {
+    //const peer = new Peer();
     console.log(`User Joined room ${roomId} with the name ${userName}`);
     socket.join(roomId);
     addUser(userName, roomId);
@@ -55,3 +52,16 @@ io.on("connection", (socket) => {
 });
 
 server.listen(port, () => console.log("API initiated"));
+
+const addUser = (userName, roomId) => {
+  users.push({
+    username: userName,
+    roomID: roomId,
+  });
+};
+const removeUser = (userName, roomId) => {
+  users = users.filter((user) => user.username != userName);
+};
+const getRoomUsers = (roomId) => {
+  return users.filter((user) => user.roomID == roomId);
+};

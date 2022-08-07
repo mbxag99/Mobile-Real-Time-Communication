@@ -3,9 +3,12 @@ import { ScrollView, View } from "react-native";
 import { Text } from "react-native-elements";
 import { Icon, Avatar } from "react-native-elements";
 import { io } from "socket.io-client";
+import { Peer } from "peerjs";
 import ChooseName from "../components/ChooseName";
+
 const APIurl = "http://10.0.0.16:3001/";
-const socket = io(`${APIurl}`, { transports: ["websocket"] });
+const socket = io(`${APIurl}` /*, { transports: ["websocket"] }*/);
+
 export default function Room({ navigation, route }) {
   const [justJoined, setJustJoined] = useState(true);
   const [name, setName] = useState("?");
