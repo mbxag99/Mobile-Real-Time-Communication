@@ -13,21 +13,14 @@ import { IndexScreenNavigator } from "./CustomNavigation";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Provider } from "react-redux";
 import Room from "./src/screens/Room";
 import RoomVideoChat from "./src/screens/RoomVideoChat";
 import { Icon } from "react-native-elements";
-import { applyMiddleware, compose } from "redux";
-import { configureStore } from "@reduxjs/toolkit";
-import thunk from "redux-thunk";
-import { reducers } from "./src/store/reducer";
+import { connect } from "react-redux";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-const store = configureStore({
-  reducer: reducers,
-  middleware: applyMiddleware([thunk]),
-});
+
 export default function App() {
   return (
     <SafeAreaView

@@ -3,26 +3,63 @@ import { ScrollView, View } from "react-native";
 import { Text } from "react-native-elements";
 import { Icon, Avatar } from "react-native-elements";
 import { io } from "socket.io-client";
-import { Peer } from "peerjs";
+import Peer from "react-native-peerjs";
 import ChooseName from "../components/ChooseName";
+import { join_Room } from "../store/actions/VideoActions";
+import { RTCView, mediaDevices } from "react-native-webrtc";
+import { VIDEO, AUDIO } from "../store/constants";
+import { useDispatch, useSelector } from "react-redux";
 
 const APIurl = "http://10.0.0.16:3001/";
-const socket = io(`${APIurl}` /*, { transports: ["websocket"] }*/);
+const socket = io(`${APIurl}`, { transports: ["websocket"] });
 
 export default function Room({ navigation, route }) {
   const [justJoined, setJustJoined] = useState(true);
   const [name, setName] = useState("?");
   const [roomUsers, setRoomUsers] = useState([]);
-
+  const dispatch = useDispatch();
   useEffect(() => {
     if (!justJoined) {
-      socket.emit("join-room", { roomId: route.params.id, userName: name });
+      myFUN();
+    }
+  }, [justJoined]);
+
+  const myFUN = async () => {
+    try {
+      await mediaDevices.enumerateDevices().then((sourceInfos) => {
+        let audioSourceId;
+        for (let i = 0; i < sourceInfos.length; i++) {
+          const sourceInfo = sourceInfos[i];
+          if (sourceInfo.kind == "audioinput") {
+            audioSourceId = sourceInfo.deviceId;
+          }
+        }
+        mediaDevices
+          .getUserMedia({
+            audio: true,
+          })
+          .then((stream) => {
+            dispatch(
+              join_Room({
+                type: AUDIO,
+                roomId: route.params.id,
+                userName: name,
+                stream: stream,
+              })
+            );
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
       socket.on("all-users", (users) => {
         console.log(users);
         setRoomUsers(users);
       });
+    } catch (err) {
+      console.log(err);
     }
-  }, [justJoined]);
+  };
 
   useEffect(() => {
     return () => {

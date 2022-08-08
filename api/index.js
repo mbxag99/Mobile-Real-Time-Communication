@@ -17,17 +17,38 @@ app.use(cors());
 
 const peerServer = ExpressPeerServer(server, {
   debug: true,
+  path: "/",
 });
+
+//const peerServerr = PeerServer({ port: 9000, path: "/myapp" });
 
 app.use("/peerjs", peerServer);
 
-app.get("/", (req, res) => {
-  res.send("hello worlds");
-});
-
+peerServer.on("connection", () => console.log("opeadasdsa"));
 io.on("connection", (socket) => {
   console.log("Someone connected");
-  socket.on("join-room", ({ roomId, userName }) => {
+  socket.on("join-room", ({ userId, roomId, userName }) => {
+    console.log(`User Joined room ${roomId} with the name ${userName}`);
+    socket.join(roomId);
+    addUser(userName, roomId);
+    socket.to(roomId).emit("user-connected", userId);
+    io.to(roomId).emit("all-users", getRoomUsers(roomId));
+
+    socket.on("user-disconnected", () => {
+      console.log(`${userName} just left room ${roomId}`);
+      socket.leave(roomId);
+      removeUser(userName, roomId);
+      io.to(roomId).emit("all-users", getRoomUsers(roomId));
+    });
+
+    socket.on("disconnect", () => {
+      console.log(`${userName} just left room ${roomId}`);
+      socket.leave(roomId);
+      removeUser(userName, roomId);
+      io.to(roomId).emit("all-users", getRoomUsers(roomId));
+    });
+  });
+  /*socket.on("join-room-with-video-stream", ({ userId, roomId, userName }) => {
     //const peer = new Peer();
     console.log(`User Joined room ${roomId} with the name ${userName}`);
     socket.join(roomId);
@@ -48,7 +69,7 @@ io.on("connection", (socket) => {
       removeUser(userName, roomId);
       io.to(roomId).emit("all-users", getRoomUsers(roomId));
     });
-  });
+  });*/
 });
 
 server.listen(port, () => console.log("API initiated"));

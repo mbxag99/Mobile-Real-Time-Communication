@@ -1,0 +1,9 @@
+export const MY_VIDEO_STREAM = "MY_VIDEO_STREAM";
+export const MY_AUDIO_STREAM = "MY_AUDIO_STREAM";
+export const JOIN_ROOM = "JOIN_ROOM";
+export const ADD_VIDEO_STREAM = "ADD_VIDEO_STREAM";
+export const ADD_AUDIO_STREAM = "ADD_AUDIO_STREAM";
+export const ADD_REMOTE_VIDEO_STREAM = "ADD_REMOTE_VIDEO_STREAM";
+export const ADD_REMOTE_AUDIO_STREAM = "ADD_REMOTE_AUDIO_STREAM";
+export const AUDIO = "AUDIO";
+export const VIDEO = "VIDEO";
