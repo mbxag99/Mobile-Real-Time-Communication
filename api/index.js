@@ -24,7 +24,7 @@ const peerServer = ExpressPeerServer(server, {
 
 app.use("/peerjs", peerServer);
 
-peerServer.on("connection", () => console.log("opeadasdsa"));
+peerServer.on("connection", () => console.log("peer is open"));
 io.on("connection", (socket) => {
   console.log("Someone connected");
   socket.on("join-room", ({ userId, roomId, userName }) => {

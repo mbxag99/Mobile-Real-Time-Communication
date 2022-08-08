@@ -11,10 +11,11 @@ import {
   ADD_REMOTE_AUDIO_STREAM,
   AUDIO,
   VIDEO,
+  FETCH_ROOM_USERS,
 } from "../constants";
 
-export const API_URI = `http://10.0.0.16:3001/`;
-export const socket = io(`${API_URI}`, { forceNew: true });
+const API_URI = `http://10.0.0.16:3001/`;
+const socket = io(`${API_URI}`, { forceNew: true });
 
 const peerServer = new Peer(undefined, {
   host: "10.0.0.16",
@@ -22,10 +23,13 @@ const peerServer = new Peer(undefined, {
   port: 3001,
   path: "/peerjs",
 });
-
-peerServer.on("open", (id) => console.log(id));
-peerServer.on("error", (error) => console.log(error));
-socket.on("error", (error) => console.log(error));
+let userIIDD;
+peerServer.on("open", (id) => {
+  console.log(id + `hELL yEAH It works`);
+  userIIDD = id;
+});
+///peerServer.on("error", (error) => console.log(error));
+socket.on("error", (error) => console.log(error + `socket error`));
 
 export const join_Room =
   ({ type, roomId, userName, stream }) =>
@@ -33,10 +37,17 @@ export const join_Room =
     try {
       if (type == VIDEO) dispatch({ type: MY_VIDEO_STREAM, payload: stream });
       else if (type == AUDIO) {
+        console.log("before dispatch");
         dispatch({ type: MY_AUDIO_STREAM, payload: stream });
-        peerServer.on("open", (userId) => {
-          socket.emit("join-room", (userId, roomId, userName));
+        console.log("after dispatch");
+        // peerServer.on("open", (userId) => {
+        console.log("Going to socket");
+        socket.emit("join-room", {
+          userId: userIIDD,
+          roomId: roomId,
+          userName: userName,
         });
+        // });
 
         socket.on("user-connected", (userId) => {
           const call = peerServer.call(userId, stream);
@@ -58,3 +69,13 @@ export const join_Room =
       }
     } catch (err) {}
   };
+
+export const get_users = () => async (dispatch) => {
+  socket.on("all-users", (users) => {
+    dispatch({ type: FETCH_ROOM_USERS, payload: users });
+  });
+};
+
+export const disconnectFromRoom = () => async (dispatch) => {
+  socket.emit("user-disconnected");
+};

@@ -5,18 +5,21 @@ import { Icon, Avatar } from "react-native-elements";
 import { io } from "socket.io-client";
 import Peer from "react-native-peerjs";
 import ChooseName from "../components/ChooseName";
-import { join_Room } from "../store/actions/VideoActions";
+import {
+  disconnectFromRoom,
+  get_users,
+  join_Room,
+} from "../store/actions/VideoActions";
 import { RTCView, mediaDevices } from "react-native-webrtc";
 import { VIDEO, AUDIO } from "../store/constants";
 import { useDispatch, useSelector } from "react-redux";
 
-const APIurl = "http://10.0.0.16:3001/";
-const socket = io(`${APIurl}`, { transports: ["websocket"] });
-
 export default function Room({ navigation, route }) {
   const [justJoined, setJustJoined] = useState(true);
   const [name, setName] = useState("?");
-  const [roomUsers, setRoomUsers] = useState([]);
+  const { roomParticipants: roomUsers } = useSelector(
+    (state) => state.RoomReducer
+  );
   const dispatch = useDispatch();
   useEffect(() => {
     if (!justJoined) {
@@ -24,9 +27,9 @@ export default function Room({ navigation, route }) {
     }
   }, [justJoined]);
 
-  const myFUN = async () => {
+  const myFUN = () => {
     try {
-      await mediaDevices.enumerateDevices().then((sourceInfos) => {
+      mediaDevices.enumerateDevices().then((sourceInfos) => {
         let audioSourceId;
         for (let i = 0; i < sourceInfos.length; i++) {
           const sourceInfo = sourceInfos[i];
@@ -52,10 +55,11 @@ export default function Room({ navigation, route }) {
             console.log(error);
           });
       });
-      socket.on("all-users", (users) => {
+      dispatch(get_users());
+      /* socket.on("all-users", (users) => {
         console.log(users);
         setRoomUsers(users);
-      });
+      });*/
     } catch (err) {
       console.log(err);
     }
@@ -64,7 +68,8 @@ export default function Room({ navigation, route }) {
   useEffect(() => {
     return () => {
       console.log("Unmounted");
-      socket.emit("user-disconnected");
+      dispatch(disconnectFromRoom());
+      //socket.emit("user-disconnected");
     };
   }, []);
 
@@ -101,8 +106,9 @@ export default function Room({ navigation, route }) {
                 alignContent: "center",
               }}
             >
-              {[...Array(roomUsers.length)].map(() => (
+              {[...Array(roomUsers.length)].map((blac, index) => (
                 <Avatar
+                  key={index}
                   rounded
                   icon={{ name: "user", type: "font-awesome" }}
                   activeOpacity={0.7}

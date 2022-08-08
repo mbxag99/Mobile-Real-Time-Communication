@@ -7,3 +7,4 @@ export const ADD_REMOTE_VIDEO_STREAM = "ADD_REMOTE_VIDEO_STREAM";
 export const ADD_REMOTE_AUDIO_STREAM = "ADD_REMOTE_AUDIO_STREAM";
 export const AUDIO = "AUDIO";
 export const VIDEO = "VIDEO";
+export const FETCH_ROOM_USERS = "FETCH_ROOM_USERS";
