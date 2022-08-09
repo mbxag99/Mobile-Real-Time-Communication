@@ -31,7 +31,10 @@ io.on("connection", (socket) => {
     console.log(`User Joined room ${roomId} with the name ${userName}`);
     socket.join(roomId);
     addUser(userName, roomId);
-    socket.to(roomId).emit("user-connected", userId);
+
+    socket.on("connection-request", (roomId, userId) => {
+      io.to(roomId).emit("user-connected", userId);
+    });
     io.to(roomId).emit("all-users", getRoomUsers(roomId));
 
     socket.on("user-disconnected", () => {
@@ -42,7 +45,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("disconnect", () => {
-      console.log(`${userName} just left room ${roomId}`);
+      console.log(`${userName} just Disconnected`);
       socket.leave(roomId);
       removeUser(userName, roomId);
       io.to(roomId).emit("all-users", getRoomUsers(roomId));

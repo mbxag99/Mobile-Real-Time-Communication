@@ -1,7 +1,7 @@
 import { combineReducers } from "redux";
-import VideoReducer from "./VideoReducer";
+import MediaReducer from "./MediaReducer";
 import RoomReducer from "./RoomReducer";
 export const reducers = combineReducers({
-  VideoReducer: VideoReducer,
+  MediaReducer: MediaReducer,
   RoomReducer: RoomReducer,
 });

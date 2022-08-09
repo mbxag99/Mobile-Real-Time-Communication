@@ -8,6 +8,8 @@ import {
   ADD_REMOTE_AUDIO_STREAM,
   AUDIO,
   VIDEO,
+  START_LOADING,
+  END_LOADING,
 } from "../constants";
 export default (
   state = {
@@ -17,27 +19,38 @@ export default (
     myAudioStream: null,
     AudioStreams: [],
     RemoteAudioStreams: [],
+    Loading: true,
   },
   action
 ) => {
   switch (action.type) {
+    case START_LOADING:
+      return { ...state, Loading: true };
+    case END_LOADING:
+      return { ...state, Loading: false };
     case MY_VIDEO_STREAM:
-      return { ...state, myVideoStream: action.payload };
+      return { ...state, myVideoStream: action.payload, Loading: false };
     case ADD_VIDEO_STREAM:
-      return { ...state, VideoStreams: [...VideoStreams, action.payload] };
+      return {
+        ...state,
+        VideoStreams: [...state.VideoStreams, action.payload],
+      };
     case ADD_REMOTE_VIDEO_STREAM:
       return {
         ...state,
-        RemoteVideoStreams: [...RemoteVideoStreams, action.payload],
+        RemoteVideoStreams: [...state.RemoteVideoStreams, action.payload],
       };
     case MY_AUDIO_STREAM:
-      return { ...state, myAudioStream: action.payload };
+      return { ...state, myAudioStream: action.payload, Loading: false };
     case ADD_AUDIO_STREAM:
-      return { ...state, AudioStreams: [...AudioStreams, action.payload] };
+      return {
+        ...state,
+        AudioStreams: [...state.AudioStreams, action.payload],
+      };
     case ADD_REMOTE_AUDIO_STREAM:
       return {
         ...state,
-        RemoteAudioStreams: [...RemoteAudioStreams, action.payload],
+        RemoteAudioStreams: [...state.RemoteAudioStreams, action.payload],
       };
 
     default:

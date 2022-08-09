@@ -8,3 +8,6 @@ export const ADD_REMOTE_AUDIO_STREAM = "ADD_REMOTE_AUDIO_STREAM";
 export const AUDIO = "AUDIO";
 export const VIDEO = "VIDEO";
 export const FETCH_ROOM_USERS = "FETCH_ROOM_USERS";
+
+export const START_LOADING = "START_LOADING";
+export const END_LOADING = "END_LOADING";

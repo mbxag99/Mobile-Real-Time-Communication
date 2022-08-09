@@ -9,7 +9,7 @@ import {
   disconnectFromRoom,
   get_users,
   join_Room,
-} from "../store/actions/VideoActions";
+} from "../store/actions/Actions";
 import { RTCView, mediaDevices } from "react-native-webrtc";
 import { VIDEO, AUDIO } from "../store/constants";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,6 +20,9 @@ export default function Room({ navigation, route }) {
   const { roomParticipants: roomUsers } = useSelector(
     (state) => state.RoomReducer
   );
+  const { myVideoStream, VideoStreams, RemoteVideoStreams, Loading } =
+    useSelector((state) => state.MediaReducer);
+
   const dispatch = useDispatch();
   useEffect(() => {
     if (!justJoined) {
@@ -29,22 +32,35 @@ export default function Room({ navigation, route }) {
 
   const myFUN = () => {
     try {
+      let isFront = true;
       mediaDevices.enumerateDevices().then((sourceInfos) => {
-        let audioSourceId;
+        let videoSourceId;
         for (let i = 0; i < sourceInfos.length; i++) {
           const sourceInfo = sourceInfos[i];
-          if (sourceInfo.kind == "audioinput") {
-            audioSourceId = sourceInfo.deviceId;
+          if (
+            sourceInfo.kind == "videoinput" &&
+            sourceInfo.facing == (isFront ? "front" : "environment")
+          ) {
+            videoSourceId = sourceInfo.deviceId;
           }
         }
         mediaDevices
           .getUserMedia({
             audio: true,
+            video: {
+              mandatory: {
+                minWidth: 100,
+                minHeight: 200,
+                minFrameRate: 30,
+              },
+              facingMode: isFront ? "user" : "environment",
+              optional: videoSourceId ? [{ sourceId: videoSourceId }] : [],
+            },
           })
           .then((stream) => {
             dispatch(
               join_Room({
-                type: AUDIO,
+                type: VIDEO,
                 roomId: route.params.id,
                 userName: name,
                 stream: stream,
@@ -56,15 +72,16 @@ export default function Room({ navigation, route }) {
           });
       });
       dispatch(get_users());
-      /* socket.on("all-users", (users) => {
-        console.log(users);
-        setRoomUsers(users);
-      });*/
     } catch (err) {
       console.log(err);
     }
   };
-
+  useEffect(() => {
+    console.log(Loading);
+    console.log(myVideoStream?.toURL());
+    console.log(RemoteVideoStreams?.length);
+    console.log(VideoStreams?.length);
+  }, [Loading]);
   useEffect(() => {
     return () => {
       console.log("Unmounted");
@@ -94,10 +111,38 @@ export default function Room({ navigation, route }) {
               backgroundColor: "#73dcff",
             }}
           >
+            <RTCView
+              style={{
+                width: 100,
+                height: 200,
+                backgroundColor: "black",
+              }}
+              streamURL={myVideoStream?.toURL()}
+            />
+            <RTCView
+              style={{
+                position: "absolute",
+                marginLeft: 200,
+                width: 100,
+                height: 200,
+                backgroundColor: "black",
+              }}
+              streamURL={RemoteVideoStreams[0]?.toURL()}
+            />
+            <RTCView
+              style={{
+                position: "absolute",
+                marginLeft: 200,
+                width: 100,
+                height: 200,
+                backgroundColor: "black",
+              }}
+              streamURL={VideoStreams[0]?.toURL()}
+            />
             <Text>Chatting {route.params.id}</Text>
             <ScrollView
               contentContainerStyle={{
-                flex: 0.8,
+                flex: 1,
                 display: "flex",
                 flexDirection: "row",
                 flexWrap: "wrap",
@@ -106,18 +151,28 @@ export default function Room({ navigation, route }) {
                 alignContent: "center",
               }}
             >
-              {[...Array(roomUsers.length)].map((blac, index) => (
-                <Avatar
+              {/*[...Array(RemoteVideoStreams.length)].map((_, index) => {
+                <RTCView
                   key={index}
-                  rounded
-                  icon={{ name: "user", type: "font-awesome" }}
-                  activeOpacity={0.7}
-                  containerStyle={{
-                    backgroundColor: "purple",
-                    borderColor: "green",
+                  style={{
+                    width: 100,
+                    height: 200,
+                    backgroundColor: "black",
                   }}
-                />
-              ))}
+                  streamURL={RemoteVideoStreams[index]?.toURL()}
+                />;
+              })*/}
+              {/*[...Array(VideoStreams.length)].map((_, index) => {
+                <RTCView
+                  key={index + RemoteVideoStreams.length}
+                  style={{
+                    width: 100,
+                    height: 200,
+                    backgroundColor: "black",
+                  }}
+                  streamURL={VideoStreams[index]?.toURL()}
+                />;
+              })*/}
             </ScrollView>
           </View>
           <View
@@ -138,31 +193,25 @@ export default function Room({ navigation, route }) {
                 alignItems: "center",
               }}
             >
-              {[...Array(roomUsers.length)].map((user, index) => (
-                <Avatar
-                  key={index}
-                  rounded
-                  icon={{ name: "user", type: "font-awesome" }}
-                  activeOpacity={0.7}
-                  containerStyle={{ backgroundColor: "purple" }}
-                  title={user?.username}
-                />
-              ))}
+              {[...Array(RemoteVideoStreams.length + VideoStreams.length)].map(
+                (user, index) => (
+                  <Avatar
+                    key={index}
+                    rounded
+                    icon={{ name: "user", type: "font-awesome" }}
+                    activeOpacity={0.7}
+                    containerStyle={{ backgroundColor: "purple" }}
+                    title={user?.username}
+                  />
+                )
+              )}
             </ScrollView>
             <View
               style={{
                 position: "relative",
                 backgroundColor: "#ff0080",
               }}
-            >
-              <Icon
-                name="heartbeat"
-                type="font-awesome"
-                onPress={() => {
-                  navigation.navigate("RoomVideoChat"), { id: route.params.id };
-                }}
-              ></Icon>
-            </View>
+            ></View>
           </View>
         </View>
       )}
