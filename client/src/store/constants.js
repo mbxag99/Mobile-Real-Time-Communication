@@ -15,3 +15,4 @@ export const REMOVE_VIDEO_STREAM = "REMOVE_VIDEO_STREAM";
 
 export const FLUSH = "FLUSH";
 export const LISTENER = "LISTENER";
+export const STREAMER = "STREAMER";

@@ -10,11 +10,11 @@ import {
 } from "react-native";
 import Index from "./src/screens/Index";
 import { IndexScreenNavigator } from "./CustomNavigation";
+import Create_New_Room from "./src/screens/Create_New_Room";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Room from "./src/screens/Room";
-import RoomVideoChat from "./src/screens/RoomVideoChat";
 import { Icon } from "react-native-elements";
 import { connect } from "react-redux";
 
@@ -39,6 +39,8 @@ export default function App() {
               let rn = route.name;
 
               if (rn === "Home") iconName = focused ? "home" : "home-outline";
+              else if (rn === "New Room")
+                iconName = focused ? "add-circle" : "add-circle-outline";
 
               // You can return any component that you like here!
               return (
@@ -55,6 +57,7 @@ export default function App() {
           initialRouteName="Home"
         >
           <Tab.Screen name="Home" component={IndexScreenNavigator} />
+          <Tab.Screen name="New Room" component={Create_New_Room} />
         </Tab.Navigator>
       </NavigationContainer>
     </SafeAreaView>

@@ -8,12 +8,12 @@ import ChooseName from "../components/ChooseName";
 import {
   disconnectFromRoom,
   get_listeners,
-  get_users,
   join_Room,
 } from "../store/actions/Actions";
 import { RTCView, mediaDevices } from "react-native-webrtc";
 import { VIDEO, AUDIO, LISTENER } from "../store/constants";
 import { useDispatch, useSelector } from "react-redux";
+import InCallManager from "react-native-incall-manager";
 
 export default function Room({ navigation, route }) {
   const [justJoined, setJustJoined] = useState(true);
@@ -79,7 +79,6 @@ export default function Room({ navigation, route }) {
             console.log(error);
           });
       });
-      dispatch(get_users());
     } catch (err) {
       console.log(err);
     }

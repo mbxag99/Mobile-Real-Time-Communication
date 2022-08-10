@@ -3,7 +3,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Room from "./src/screens/Room";
 import Index from "./src/screens/Index";
 import RoomTemp from "./src/components/RoomTemp";
-import RoomVideoChat from "./src/screens/RoomVideoChat";
 const Stack = createNativeStackNavigator();
 
 const IndexScreenNavigator = () => {
@@ -14,7 +13,6 @@ const IndexScreenNavigator = () => {
     >
       <Stack.Screen name="Index" component={Index} />
       <Stack.Screen name="Room" component={Room} />
-      <Stack.Screen name="RoomVideoChat" component={RoomVideoChat} />
     </Stack.Navigator>
   );
 };
