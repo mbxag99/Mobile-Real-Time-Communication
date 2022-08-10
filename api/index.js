@@ -54,6 +54,10 @@ io.on("connection", (socket) => {
       //// socket.close();
       io.to(roomId).emit("all-users", getRoomUsers(roomId));
     });
+
+    socket.on("end", () => {
+      socket.disconnect(0);
+    });
   });
 });
 
