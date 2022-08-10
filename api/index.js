@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { ExpressPeerServer } = require("peer");
 
-let users = [];
+let listeners = [];
 const app = express();
 const server = require("http").Server(app);
 const io = require("socket.io")(server, {
@@ -25,34 +25,30 @@ app.use("/peerjs", peerServer);
 peerServer.on("connection", () => console.log("peer is open"));
 io.on("connection", (socket) => {
   console.log("Someone connected");
-  socket.on("join-room", ({ userId, roomId, userName }) => {
+  socket.on("join-room", ({ userId, roomId, userName, isListen }) => {
     console.log(`User Joined room ${roomId} with the name ${userName}`);
     socket.join(roomId);
-    addUser(userName, roomId);
+    if (isListen) addUser(userId, userName, roomId);
 
     socket.on("connection-request", (roomId, userId) => {
       socket.to(roomId).emit("user-connected", userId);
     });
-    io.to(roomId).emit("all-users", getRoomUsers(roomId));
+    io.to(roomId).emit("all-listeners", getRoomListeners(roomId));
 
     socket.on("user-disconnected", () => {
       console.log(`${userName} just left room ${roomId}`);
-      console.log(socket.rooms);
       socket.leave(roomId);
-      console.log(socket.rooms);
-      removeUser(userName, roomId);
+      if (isListen) removeUser(userId);
       socket.to(roomId).emit("other-user-disconnected", userId);
-      //   socket.close();
-      io.to(roomId).emit("all-users", getRoomUsers(roomId));
+      io.to(roomId).emit("all-listeners", getRoomListeners(roomId));
     });
 
     socket.on("disconnect", () => {
       console.log(`${userName} just Disconnected`);
       socket.leave(roomId);
-      removeUser(userName, roomId);
+      if (isListen) removeUser(userId);
       socket.to(roomId).emit("other-user-disconnected", userId);
-      //// socket.close();
-      io.to(roomId).emit("all-users", getRoomUsers(roomId));
+      io.to(roomId).emit("all-listeners", getRoomListeners(roomId));
     });
 
     socket.on("end", () => {
@@ -63,15 +59,16 @@ io.on("connection", (socket) => {
 
 server.listen(port, () => console.log("API initiated"));
 
-const addUser = (userName, roomId) => {
-  users.push({
+const addUser = (userId, userName, roomId) => {
+  listeners.push({
+    userId: userId,
     username: userName,
     roomID: roomId,
   });
 };
-const removeUser = (userName, roomId) => {
-  users = users.filter((user) => user.username != userName);
+const removeUser = (userId) => {
+  listeners = listeners.filter((user) => user.userId != userId);
 };
-const getRoomUsers = (roomId) => {
-  return users.filter((user) => user.roomID == roomId);
+const getRoomListeners = (roomId) => {
+  return listeners.filter((user) => user.roomID == roomId);
 };
