@@ -107,16 +107,7 @@ export const disconnectFromRoom = () => async (dispatch) => {
     userIIDD = newId;
     console.log(`New Peer ID ${newId}`);
     socket.emit("user-disconnected");
-    socket.close();
+    socket.emit("end");
     socket = io(`${API_URI}`, { forceNew: true });
   });
 };
-
-/*const reInit = () => {
-  const peerServer = new Peer(undefined, {
-  host: "10.0.0.16",
-  secure: false,
-  port: 3001,
-  path: "/peerjs",
-});
-let userIIDD;};*/
