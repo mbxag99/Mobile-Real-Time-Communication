@@ -1,8 +1,14 @@
 import React, { useState } from "react";
 import { View } from "react-native";
 import { Button, Input } from "react-native-elements";
+import { CheckBox } from "@rneui/themed";
 
-export default function ChooseName({ NameSitter, StateSitter }) {
+export default function ChooseName({
+  NameSitter,
+  StateSitter,
+  asListener,
+  setAsListener,
+}) {
   return (
     <View
       style={{
@@ -16,6 +22,16 @@ export default function ChooseName({ NameSitter, StateSitter }) {
       <Input
         placeholder="Choose Name"
         onChangeText={(value) => NameSitter(value)}
+      />
+      <CheckBox
+        center
+        title="Enter as listener"
+        checkedIcon="dot-circle-o"
+        uncheckedIcon="circle-o"
+        checked={asListener}
+        onPress={() => {
+          setAsListener((jj) => !jj);
+        }}
       />
       <Button
         title="Join"

@@ -7,27 +7,35 @@ import Peer from "react-native-peerjs";
 import ChooseName from "../components/ChooseName";
 import {
   disconnectFromRoom,
+  get_listeners,
   get_users,
   join_Room,
 } from "../store/actions/Actions";
 import { RTCView, mediaDevices } from "react-native-webrtc";
-import { VIDEO, AUDIO } from "../store/constants";
+import { VIDEO, AUDIO, LISTENER } from "../store/constants";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function Room({ navigation, route }) {
   const [justJoined, setJustJoined] = useState(true);
   const [name, setName] = useState("?");
-  const { roomParticipants: roomUsers } = useSelector(
-    (state) => state.RoomReducer
-  );
+  const [asListener, setAsListener] = useState(false);
+  const { RoomListeners } = useSelector((state) => state.ListenReducer);
   const { myVideoStream, VideoStreams, RemoteVideoStreams, Loading } =
     useSelector((state) => state.MediaReducer);
 
   const dispatch = useDispatch();
   useEffect(() => {
-    if (!justJoined) {
+    if (!justJoined && !asListener) {
       myFUN();
-    }
+    } else if (!justJoined && asListener)
+      dispatch(
+        join_Room({
+          type: LISTENER,
+          roomId: route.params.id,
+          userName: name,
+        })
+      );
+    dispatch(get_listeners());
   }, [justJoined]);
 
   const myFUN = () => {
@@ -87,7 +95,12 @@ export default function Room({ navigation, route }) {
   return (
     <>
       {justJoined ? (
-        <ChooseName NameSitter={setName} StateSitter={setJustJoined} />
+        <ChooseName
+          NameSitter={setName}
+          StateSitter={setJustJoined}
+          asListener={asListener}
+          setAsListener={setAsListener}
+        />
       ) : (
         <View
           style={{
@@ -117,14 +130,16 @@ export default function Room({ navigation, route }) {
                 alignContent: "center",
               }}
             >
-              <RTCView
-                style={{
-                  width: 200,
-                  height: 200,
-                  backgroundColor: "black",
-                }}
-                streamURL={myVideoStream?.toURL()}
-              />
+              {!asListener ? (
+                <RTCView
+                  style={{
+                    width: 200,
+                    height: 200,
+                    backgroundColor: "black",
+                  }}
+                  streamURL={myVideoStream?.toURL()}
+                />
+              ) : null}
               {RemoteVideoStreams.map((RVS, index) => (
                 <RTCView
                   key={index}
@@ -167,18 +182,16 @@ export default function Room({ navigation, route }) {
                 alignItems: "center",
               }}
             >
-              {[...Array(RemoteVideoStreams.length + VideoStreams.length)].map(
-                (user, index) => (
-                  <Avatar
-                    key={index}
-                    rounded
-                    icon={{ name: "user", type: "font-awesome" }}
-                    activeOpacity={0.7}
-                    containerStyle={{ backgroundColor: "purple" }}
-                    title={user?.username}
-                  />
-                )
-              )}
+              {[...Array(RoomListeners.length)].map((user, index) => (
+                <Avatar
+                  key={index}
+                  rounded
+                  icon={{ name: "user", type: "font-awesome" }}
+                  activeOpacity={0.7}
+                  containerStyle={{ backgroundColor: "purple" }}
+                  title={user?.username}
+                />
+              ))}
             </ScrollView>
             <View
               style={{

@@ -14,6 +14,8 @@ import {
   FETCH_ROOM_USERS,
   REMOVE_VIDEO_STREAM,
   FLUSH,
+  LISTENER,
+  FETCH_ROOM_LISTENERS,
 } from "../constants";
 import { flushSync } from "react-dom";
 
@@ -46,18 +48,23 @@ export const join_Room =
   ({ type, roomId, userName, stream }) =>
   async (dispatch) => {
     try {
-      dispatch({ type: MY_VIDEO_STREAM, payload: stream });
+      if (type != LISTENER)
+        dispatch({ type: MY_VIDEO_STREAM, payload: stream });
       socket.emit("join-room", {
         userId: userIIDD,
         roomId: roomId,
         userName: userName,
+        isListen: type == LISTENER ? true : false,
       });
 
       socket.on("user-connected", (userId) => {
         if (userId != userIIDD) {
           //Already in room and suddenly someone joins
           console.log("calling the new commer");
-          const call = peerServer.call(userId, stream);
+          const call = peerServer.call(
+            userId,
+            type != LISTENER ? stream : null
+          );
           call.on("stream", (remoteVideoStream) => {
             dispatch({
               type: ADD_REMOTE_VIDEO_STREAM,
@@ -69,7 +76,7 @@ export const join_Room =
       socket.emit("connection-request", roomId, userIIDD);
       peerServer.on("call", (call) => {
         //Joined the room where there is already people in it.
-        call.answer(stream);
+        if (type != LISTENER) call.answer(stream);
         call.on("stream", (Stream) => {
           dispatch({
             type: ADD_VIDEO_STREAM,
@@ -88,9 +95,9 @@ export const join_Room =
     } catch (err) {}
   };
 
-export const get_users = () => async (dispatch) => {
-  socket.on("all-users", (users) => {
-    dispatch({ type: FETCH_ROOM_USERS, payload: users });
+export const get_listeners = () => async (dispatch) => {
+  socket.on("all-listeners", (users) => {
+    dispatch({ type: FETCH_ROOM_LISTENERS, payload: users });
   });
 };
 
