@@ -12,12 +12,15 @@ import {
   AUDIO,
   VIDEO,
   FETCH_ROOM_USERS,
+  REMOVE_VIDEO_STREAM,
+  FLUSH,
 } from "../constants";
+import { flushSync } from "react-dom";
 
 const API_URI = `http://10.0.0.16:3001/`;
-const socket = io(`${API_URI}`, { forceNew: true });
+let socket = io(`${API_URI}`, { forceNew: true });
 
-const peerServer = new Peer(undefined, {
+let peerServer = new Peer(undefined, {
   host: "10.0.0.16",
   secure: false,
   port: 3001,
@@ -29,33 +32,36 @@ peerServer.on("open", (id) => {
   userIIDD = id;
 });
 peerServer.on("error", (error) => console.log(error));
+/*peerServer.on("close", () => {
+  console.log("Making New");
+  peerServer = new Peer(undefined, {
+    host: "10.0.0.16",
+    secure: false,
+    port: 3001,
+    path: "/peerjs",
+  });
+});*/
 socket.on("error", (error) => console.log(error + `socket error`));
-
 export const join_Room =
   ({ type, roomId, userName, stream }) =>
   async (dispatch) => {
     try {
-      //if (type == VIDEO) dispatch({ type: MY_VIDEO_STREAM, payload: stream });
-      //  else if (type == AUDIO) {
       dispatch({ type: MY_VIDEO_STREAM, payload: stream });
-      // peerServer.on("open", (userId) => {
       socket.emit("join-room", {
         userId: userIIDD,
         roomId: roomId,
         userName: userName,
       });
-      // });
 
       socket.on("user-connected", (userId) => {
         if (userId != userIIDD) {
           //Already in room and suddenly someone joins
+          console.log("calling the new commer");
           const call = peerServer.call(userId, stream);
           call.on("stream", (remoteVideoStream) => {
-            console.log("recived stream from new user");
-            console.log(remoteVideoStream);
             dispatch({
               type: ADD_REMOTE_VIDEO_STREAM,
-              payload: remoteVideoStream,
+              payload: { userPeerID: userId, Stream: remoteVideoStream },
             });
           });
         }
@@ -65,9 +71,18 @@ export const join_Room =
         //Joined the room where there is already people in it.
         call.answer(stream);
         call.on("stream", (Stream) => {
-          console.log("recived stream from old user");
-          console.log(Stream);
-          dispatch({ type: ADD_VIDEO_STREAM, payload: Stream });
+          dispatch({
+            type: ADD_VIDEO_STREAM,
+            payload: { userPeerID: call.peer, Stream: Stream },
+          });
+        });
+      });
+
+      socket.on("other-user-disconnected", (disconnectedUser) => {
+        console.log("Yep Removing");
+        dispatch({
+          type: REMOVE_VIDEO_STREAM,
+          payload: { userPeerID: disconnectedUser },
         });
       });
     } catch (err) {}
@@ -79,7 +94,29 @@ export const get_users = () => async (dispatch) => {
   });
 };
 
-export const disconnectFromRoom = (userName) => async (dispatch) => {
-  socket.emit("user-disconnected");
-  peerServer.close();
+export const disconnectFromRoom = () => async (dispatch) => {
+  dispatch({ type: FLUSH });
+  peerServer.destroy();
+  peerServer = new Peer(undefined, {
+    host: "10.0.0.16",
+    secure: false,
+    port: 3001,
+    path: "/peerjs",
+  });
+  peerServer.on("open", (newId) => {
+    userIIDD = newId;
+    console.log(`New Peer ID ${newId}`);
+    socket.emit("user-disconnected");
+    socket.close();
+    socket = io(`${API_URI}`, { forceNew: true });
+  });
 };
+
+/*const reInit = () => {
+  const peerServer = new Peer(undefined, {
+  host: "10.0.0.16",
+  secure: false,
+  port: 3001,
+  path: "/peerjs",
+});
+let userIIDD;};*/

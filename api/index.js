@@ -20,8 +20,6 @@ const peerServer = ExpressPeerServer(server, {
   path: "/",
 });
 
-//const peerServerr = PeerServer({ port: 9000, path: "/myapp" });
-
 app.use("/peerjs", peerServer);
 
 peerServer.on("connection", () => console.log("peer is open"));
@@ -33,14 +31,18 @@ io.on("connection", (socket) => {
     addUser(userName, roomId);
 
     socket.on("connection-request", (roomId, userId) => {
-      io.to(roomId).emit("user-connected", userId);
+      socket.to(roomId).emit("user-connected", userId);
     });
     io.to(roomId).emit("all-users", getRoomUsers(roomId));
 
     socket.on("user-disconnected", () => {
       console.log(`${userName} just left room ${roomId}`);
+      console.log(socket.rooms);
       socket.leave(roomId);
+      console.log(socket.rooms);
       removeUser(userName, roomId);
+      socket.to(roomId).emit("other-user-disconnected", userId);
+      //   socket.close();
       io.to(roomId).emit("all-users", getRoomUsers(roomId));
     });
 
@@ -48,31 +50,11 @@ io.on("connection", (socket) => {
       console.log(`${userName} just Disconnected`);
       socket.leave(roomId);
       removeUser(userName, roomId);
+      socket.to(roomId).emit("other-user-disconnected", userId);
+      //// socket.close();
       io.to(roomId).emit("all-users", getRoomUsers(roomId));
     });
   });
-  /*socket.on("join-room-with-video-stream", ({ userId, roomId, userName }) => {
-    //const peer = new Peer();
-    console.log(`User Joined room ${roomId} with the name ${userName}`);
-    socket.join(roomId);
-    addUser(userName, roomId);
-    socket.to(roomId).emit("user-connected", userName);
-    io.to(roomId).emit("all-users", getRoomUsers(roomId));
-
-    socket.on("user-disconnected", () => {
-      console.log(`${userName} just left room ${roomId}`);
-      socket.leave(roomId);
-      removeUser(userName, roomId);
-      io.to(roomId).emit("all-users", getRoomUsers(roomId));
-    });
-
-    socket.on("disconnect", () => {
-      console.log(`${userName} just left room ${roomId}`);
-      socket.leave(roomId);
-      removeUser(userName, roomId);
-      io.to(roomId).emit("all-users", getRoomUsers(roomId));
-    });
-  });*/
 });
 
 server.listen(port, () => console.log("API initiated"));

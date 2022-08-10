@@ -11,3 +11,6 @@ export const FETCH_ROOM_USERS = "FETCH_ROOM_USERS";
 
 export const START_LOADING = "START_LOADING";
 export const END_LOADING = "END_LOADING";
+export const REMOVE_VIDEO_STREAM = "REMOVE_VIDEO_STREAM";
+
+export const FLUSH = "FLUSH";

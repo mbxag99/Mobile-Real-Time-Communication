@@ -49,7 +49,7 @@ export default function Room({ navigation, route }) {
             audio: true,
             video: {
               mandatory: {
-                minWidth: 100,
+                minWidth: 200,
                 minHeight: 200,
                 minFrameRate: 30,
               },
@@ -77,12 +77,6 @@ export default function Room({ navigation, route }) {
     }
   };
   useEffect(() => {
-    console.log(Loading);
-    console.log(myVideoStream?.toURL());
-    console.log(RemoteVideoStreams?.length);
-    console.log(VideoStreams?.length);
-  }, [Loading]);
-  useEffect(() => {
     return () => {
       console.log("Unmounted");
       dispatch(disconnectFromRoom());
@@ -107,38 +101,10 @@ export default function Room({ navigation, route }) {
           <View
             style={{
               display: "flex",
-              flex: 0.3,
+              flex: 0.4,
               backgroundColor: "#73dcff",
             }}
           >
-            <RTCView
-              style={{
-                width: 100,
-                height: 200,
-                backgroundColor: "black",
-              }}
-              streamURL={myVideoStream?.toURL()}
-            />
-            <RTCView
-              style={{
-                position: "absolute",
-                marginLeft: 200,
-                width: 100,
-                height: 200,
-                backgroundColor: "black",
-              }}
-              streamURL={RemoteVideoStreams[0]?.toURL()}
-            />
-            <RTCView
-              style={{
-                position: "absolute",
-                marginLeft: 200,
-                width: 100,
-                height: 200,
-                backgroundColor: "black",
-              }}
-              streamURL={VideoStreams[0]?.toURL()}
-            />
             <Text>Chatting {route.params.id}</Text>
             <ScrollView
               contentContainerStyle={{
@@ -151,34 +117,42 @@ export default function Room({ navigation, route }) {
                 alignContent: "center",
               }}
             >
-              {/*[...Array(RemoteVideoStreams.length)].map((_, index) => {
+              <RTCView
+                style={{
+                  width: 200,
+                  height: 200,
+                  backgroundColor: "black",
+                }}
+                streamURL={myVideoStream?.toURL()}
+              />
+              {RemoteVideoStreams.map((RVS, index) => (
                 <RTCView
                   key={index}
                   style={{
-                    width: 100,
+                    width: 200,
                     height: 200,
                     backgroundColor: "black",
                   }}
-                  streamURL={RemoteVideoStreams[index]?.toURL()}
-                />;
-              })*/}
-              {/*[...Array(VideoStreams.length)].map((_, index) => {
+                  streamURL={RVS.Stream.toURL()}
+                />
+              ))}
+              {VideoStreams.map((VS, index) => (
                 <RTCView
                   key={index + RemoteVideoStreams.length}
                   style={{
-                    width: 100,
+                    width: 200,
                     height: 200,
                     backgroundColor: "black",
                   }}
-                  streamURL={VideoStreams[index]?.toURL()}
-                />;
-              })*/}
+                  streamURL={VS.Stream.toURL()}
+                />
+              ))}
             </ScrollView>
           </View>
           <View
             style={{
               display: "flex",
-              flex: 0.7,
+              flex: 0.6,
               backgroundColor: "white",
             }}
           >

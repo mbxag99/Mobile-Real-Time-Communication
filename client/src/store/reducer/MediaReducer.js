@@ -10,7 +10,19 @@ import {
   VIDEO,
   START_LOADING,
   END_LOADING,
+  REMOVE_VIDEO_STREAM,
+  FLUSH,
 } from "../constants";
+
+const initalState = {
+  myVideoStream: null,
+  VideoStreams: [],
+  RemoteVideoStreams: [],
+  myAudioStream: null,
+  AudioStreams: [],
+  RemoteAudioStreams: [],
+  Loading: true,
+};
 export default (
   state = {
     myVideoStream: null,
@@ -40,6 +52,18 @@ export default (
         ...state,
         RemoteVideoStreams: [...state.RemoteVideoStreams, action.payload],
       };
+    case REMOVE_VIDEO_STREAM:
+      return {
+        ...state,
+        RemoteVideoStreams: state.RemoteVideoStreams.filter(
+          (RVS) => RVS.userPeerID != action.payload.userPeerID
+        ),
+        VideoStreams: state.VideoStreams.filter(
+          (VS) => VS.userPeerID != action.payload.userPeerID
+        ),
+      };
+    case FLUSH:
+      return { ...initalState };
     case MY_AUDIO_STREAM:
       return { ...state, myAudioStream: action.payload, Loading: false };
     case ADD_AUDIO_STREAM:
