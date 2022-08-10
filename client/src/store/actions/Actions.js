@@ -61,11 +61,11 @@ export const join_Room =
         if (userId != userIIDD) {
           //Already in room and suddenly someone joins
           console.log("calling the new commer");
-          const call = peerServer.call(
-            userId,
-            type != LISTENER ? stream : null
-          );
-          call.on("stream", (remoteVideoStream) => {
+          let call;
+          if (type != LISTENER) call = peerServer.call(userId, stream);
+          else call = peerServer.call(userId);
+          console.log(call);
+          call?.on("stream", (remoteVideoStream) => {
             dispatch({
               type: ADD_REMOTE_VIDEO_STREAM,
               payload: { userPeerID: userId, Stream: remoteVideoStream },
@@ -77,7 +77,8 @@ export const join_Room =
       peerServer.on("call", (call) => {
         //Joined the room where there is already people in it.
         if (type != LISTENER) call.answer(stream);
-        call.on("stream", (Stream) => {
+        else call.answer();
+        call?.on("stream", (Stream) => {
           dispatch({
             type: ADD_VIDEO_STREAM,
             payload: { userPeerID: call.peer, Stream: Stream },
