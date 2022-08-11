@@ -1,4 +1,4 @@
-# MobileProject
+# Mobile Real-Time communication Project
 
 React-Native
 Redux
