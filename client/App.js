@@ -16,12 +16,15 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Room from "./src/screens/Room";
 import { Icon } from "react-native-elements";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
+import { get_all_rooms } from "./src/store/actions/Actions";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const dispatch = useDispatch();
+  // React-Native,Redux,nodejs,expressjs,peerjs,socket io,NoSQL database(lokijs)
   return (
     <SafeAreaView
       style={{
@@ -49,6 +52,11 @@ export default function App() {
                   type="ionicon"
                   size={size}
                   color={color}
+                  /*onPress={() => {
+                    iconName == "home" || iconName == "home"
+                      ? (dispatch(get_all_rooms()), console.log("reloading "))
+                      : null;
+                  }}*/
                 />
               );
             },

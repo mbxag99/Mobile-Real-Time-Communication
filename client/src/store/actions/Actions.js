@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 import Peer from "react-native-peerjs";
-
+import axios from "react-native-axios";
 import {
   MY_VIDEO_STREAM,
   MY_AUDIO_STREAM,
@@ -16,6 +16,7 @@ import {
   FLUSH,
   LISTENER,
   FETCH_ROOM_LISTENERS,
+  FETCH_ALL_ROOMS,
 } from "../constants";
 import { flushSync } from "react-dom";
 
@@ -118,4 +119,26 @@ export const disconnectFromRoom = () => async (dispatch) => {
     socket.emit("end");
     socket = io(`${API_URI}`, { forceNew: true });
   });
+};
+
+export const create_new_room = (RoomData) => async (dispatch) => {
+  try {
+    await axios
+      .post(`${API_URI}rooms/create_new_room`, RoomData)
+      .then((response) => {
+        console.log(response.data);
+      });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const get_all_rooms = () => async (dispatch) => {
+  try {
+    await axios.get(`${API_URI}rooms/get_all_rooms`).then((response) => {
+      dispatch({ type: FETCH_ALL_ROOMS, payload: response.data });
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };

@@ -1,11 +1,14 @@
-const express = require("express");
-const cors = require("cors");
-const { ExpressPeerServer } = require("peer");
-
+import express from "express";
+import cors from "cors";
+import { ExpressPeerServer } from "peer";
+import routes from "./routes.js";
+import bodyParser from "body-parser";
+import http from "http";
+import { Server } from "socket.io";
 let listeners = [];
 const app = express();
-const server = require("http").Server(app);
-const io = require("socket.io")(server, {
+const server = http.Server(app);
+const io = new Server(server, {
   cors: {
     origin: "http://localhost:19006",
     methods: ["GET", "POST"],
@@ -13,7 +16,9 @@ const io = require("socket.io")(server, {
 });
 
 const port = 3001;
+app.use(bodyParser.json({ extended: true }));
 app.use(cors());
+app.use("/rooms", routes);
 
 const peerServer = ExpressPeerServer(server, {
   debug: true,

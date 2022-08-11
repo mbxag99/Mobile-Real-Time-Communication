@@ -16,3 +16,4 @@ export const REMOVE_VIDEO_STREAM = "REMOVE_VIDEO_STREAM";
 export const FLUSH = "FLUSH";
 export const LISTENER = "LISTENER";
 export const STREAMER = "STREAMER";
+export const FETCH_ALL_ROOMS = "FETCH_ALL_ROOMS";
