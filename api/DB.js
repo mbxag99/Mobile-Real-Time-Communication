@@ -22,6 +22,30 @@ export const create_new_room = async (req, res) => {
   }
 };
 
+export const increase_user_count_to_room = async (req, res) => {
+  const { roomID } = req.body;
+  try {
+    var ROOM = rooms.findOne({ ID: roomID });
+    ROOM.numParticipants += 1;
+    rooms.update(ROOM);
+    res.status(201).json("");
+  } catch (error) {
+    res.status(410).json({ message: error });
+  }
+};
+
+export const decrease_user_count_to_room = async (req, res) => {
+  const { roomID } = req.body;
+  try {
+    var ROOM = rooms.findOne({ ID: roomID });
+    ROOM.numParticipants -= 1;
+    rooms.update(ROOM);
+    res.status(201).json("");
+  } catch (error) {
+    res.status(410).json({ message: error });
+  }
+};
+
 function uuid() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
     var r = (Math.random() * 16) | 0,
