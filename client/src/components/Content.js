@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Dimensions, FlatList, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  Text,
+  View,
+} from "react-native";
 import GestureRecognizer, { swipeDirections } from "react-native-swipe-detect"; //https://github.com/glepur/react-native-swipe-gestures
 import { useDispatch, useSelector } from "react-redux";
 import { get_all_rooms } from "../store/actions/Actions";
@@ -56,31 +62,43 @@ export default function Content({ navigation }) {
     velocityThreshold: 0,
     directionalOffsetThreshold: 70,
   };
-  const { Rooms } = useSelector((state) => state.RoomReducer);
+  const { Rooms, LoadingRooms } = useSelector((state) => state.RoomReducer);
 
   useEffect(() => {
     dispatch(get_all_rooms());
   }, []);
 
   return (
-    <FlatList
-      data={Rooms}
-      renderItem={(item, index) => (
-        <RoomTemp
-          key={index}
-          navigation={navigation}
-          id={item.item.ID}
-          caption={item.item.description}
-          numParticipants={item.item.numParticipants | 0}
-          tags={item.item.tags}
-          color={item.item.color}
-          image={item.item.img}
+    <>
+      {LoadingRooms == true ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignContent: "center" }}
+        >
+          <ActivityIndicator size="large" />
+        </View>
+      ) : LoadingRooms == false && Rooms.length > 0 ? (
+        <FlatList
+          data={Rooms}
+          renderItem={(item, index) => (
+            <RoomTemp
+              key={index}
+              navigation={navigation}
+              id={item.item.ID}
+              caption={item.item.description}
+              numParticipants={item.item.numParticipants | 0}
+              tags={item.item.tags}
+              color={item.item.color}
+              image={item.item.img}
+            />
+          )}
+          snapToAlignment="center"
+          decelerationRate={"fast"}
+          snapToInterval={Dimensions.get("window").height - 100}
+          bounces
         />
+      ) : (
+        <Text style={{ backgroundColor: "red" }}>There are no rooms</Text>
       )}
-      snapToAlignment="center"
-      decelerationRate={"fast"}
-      snapToInterval={Dimensions.get("window").height - 100}
-      bounces
-    />
+    </>
   );
 }
