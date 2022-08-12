@@ -13,7 +13,7 @@ import { ColorPicker } from "react-native-btr";
 import { useDispatch, useSelector } from "react-redux";
 import { create_new_room, get_all_rooms } from "../store/actions/Actions";
 
-export default function Create_New_Room() {
+export default function Create_New_Room({ navigation }) {
   const dispatch = useDispatch();
   const [tags, setTags] = useState([]);
   const [desription, setDiscription] = useState("");
@@ -31,10 +31,12 @@ export default function Create_New_Room() {
       description: desription,
       color: selectedColor,
       img: backImg,
+      numParticipants: 0,
     };
     console.log("HUH");
     dispatch(create_new_room(data));
     dispatch(get_all_rooms());
+    navigation.navigate("Home");
   };
   return (
     <View

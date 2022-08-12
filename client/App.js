@@ -26,48 +26,46 @@ export default function App() {
   const dispatch = useDispatch();
   // React-Native,Redux,nodejs,expressjs,peerjs,socket io,NoSQL database(lokijs)
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: "white",
-        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-      }}
-    >
-      <NavigationContainer>
-        <Tab.Navigator
-          screenOptions={({ route }) => ({
-            headerShown: false,
-            tabBarIcon: ({ focused, color, size }) => {
-              let iconName;
-              let rn = route.name;
+    <>
+      <StatusBar backgroundColor={"black"} />
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: "white",
+          paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+        }}
+      >
+        <NavigationContainer>
+          <Tab.Navigator
+            screenOptions={({ route }) => ({
+              headerShown: false,
+              tabBarIcon: ({ focused, color, size }) => {
+                let iconName;
+                let rn = route.name;
 
-              if (rn === "Home") iconName = focused ? "home" : "home-outline";
-              else if (rn === "New Room")
-                iconName = focused ? "add-circle" : "add-circle-outline";
+                if (rn === "Home") iconName = focused ? "home" : "home-outline";
+                else if (rn === "New Room")
+                  iconName = focused ? "add-circle" : "add-circle-outline";
 
-              // You can return any component that you like here!
-              return (
-                <Icon
-                  name={iconName}
-                  type="ionicon"
-                  size={size}
-                  color={color}
-                  /*onPress={() => {
-                    iconName == "home" || iconName == "home"
-                      ? (dispatch(get_all_rooms()), console.log("reloading "))
-                      : null;
-                  }}*/
-                />
-              );
-            },
-            tabBarStyle: {},
-          })}
-          initialRouteName="Home"
-        >
-          <Tab.Screen name="Home" component={IndexScreenNavigator} />
-          <Tab.Screen name="New Room" component={Create_New_Room} />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </SafeAreaView>
+                // You can return any component that you like here!
+                return (
+                  <Icon
+                    name={iconName}
+                    type="ionicon"
+                    size={size}
+                    color={color}
+                  />
+                );
+              },
+              tabBarStyle: {},
+            })}
+            initialRouteName="Home"
+          >
+            <Tab.Screen name="Home" component={IndexScreenNavigator} />
+            <Tab.Screen name="New Room" component={Create_New_Room} />
+          </Tab.Navigator>
+        </NavigationContainer>
+      </SafeAreaView>
+    </>
   );
 }

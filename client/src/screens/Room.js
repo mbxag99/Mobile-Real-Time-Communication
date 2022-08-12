@@ -9,6 +9,8 @@ import {
   disconnectFromRoom,
   get_listeners,
   join_Room,
+  user_joined_room,
+  user_quit_room,
 } from "../store/actions/Actions";
 import { RTCView, mediaDevices } from "react-native-webrtc";
 import { VIDEO, AUDIO, LISTENER } from "../store/constants";
@@ -87,7 +89,7 @@ export default function Room({ navigation, route }) {
     return () => {
       console.log("Unmounted");
       dispatch(disconnectFromRoom());
-      //socket.emit("user-disconnected");
+      dispatch(user_quit_room(route.params.id));
     };
   }, []);
 

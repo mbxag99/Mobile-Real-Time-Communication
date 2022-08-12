@@ -51,6 +51,7 @@ export const join_Room =
     try {
       if (type != LISTENER)
         dispatch({ type: MY_VIDEO_STREAM, payload: stream });
+      dispatch(user_joined_room(roomId));
       socket.emit("join-room", {
         userId: userIIDD,
         roomId: roomId,
@@ -136,8 +137,34 @@ export const create_new_room = (RoomData) => async (dispatch) => {
 export const get_all_rooms = () => async (dispatch) => {
   try {
     await axios.get(`${API_URI}rooms/get_all_rooms`).then((response) => {
+      console.log(response.data);
       dispatch({ type: FETCH_ALL_ROOMS, payload: response.data });
     });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const user_joined_room = (roomID) => async (dispatch) => {
+  try {
+    console.log("Going ooututttt" + roomID);
+    await axios
+      .patch(`${API_URI}rooms/user_joined_room`, { roomID: roomID })
+      .then((response) => {
+        dispatch(get_all_rooms());
+      });
+  } catch (error) {
+    console.log(error + "Potttaaaa");
+  }
+};
+
+export const user_quit_room = (roomID) => async (dispatch) => {
+  try {
+    await axios
+      .patch(`${API_URI}rooms/user_quit_room`, { roomID: roomID })
+      .then((response) => {
+        dispatch(get_all_rooms());
+      });
   } catch (error) {
     console.log(error);
   }

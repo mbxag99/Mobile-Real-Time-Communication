@@ -6,7 +6,7 @@ import {
   View,
 } from "react-native";
 
-import Content from "../components/Content";
+import Content from "../components/Content.js";
 export default function Index({ navigation }) {
   return (
     <View style={{ flex: 1, backgroundColor: "black" }}>

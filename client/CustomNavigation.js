@@ -1,11 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Room from "./src/screens/Room";
 import Index from "./src/screens/Index";
 import RoomTemp from "./src/components/RoomTemp";
+import { useDispatch } from "react-redux";
+import { get_all_rooms } from "./src/store/actions/Actions";
 const Stack = createNativeStackNavigator();
 
-const IndexScreenNavigator = () => {
+const IndexScreenNavigator = ({ navigation }) => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    navigation.addListener("tabPress", (e) => {
+      console.log("registered");
+      dispatch({ type: "START_ROOM_LOADING" });
+      dispatch(get_all_rooms());
+    });
+  }, []);
+
   return (
     <Stack.Navigator
       initialRouteName="Index"
