@@ -72,15 +72,7 @@ export default function RoomTemp({
 function FAST({ navigation, id, caption, numParticipants, tags }) {
   return (
     <>
-      <TouchableOpacity style={{ flex: 0.1, justifyContent: "center" }}>
-        <Icon
-          name="volume-mute-outline"
-          type="ionicon"
-          size={40}
-          color="#517fa4"
-        />
-      </TouchableOpacity>
-      <View style={{ flex: 0.9, justifyContent: "center" }}>
+      <View style={{ flex: 1, justifyContent: "center" }}>
         <Text style={{ backgroundColor: "red" }}>{id}</Text>
         <Text style={{ backgroundColor: "red" }}>{caption}</Text>
         <Text style={{ backgroundColor: "red" }}>{numParticipants}</Text>

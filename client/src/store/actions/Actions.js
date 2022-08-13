@@ -17,6 +17,7 @@ import {
   LISTENER,
   FETCH_ROOM_LISTENERS,
   FETCH_ALL_ROOMS,
+  CHAT_NEW_MESSAGE,
 } from "../constants";
 import { flushSync } from "react-dom";
 
@@ -95,6 +96,14 @@ export const join_Room =
           payload: { userPeerID: disconnectedUser },
         });
       });
+
+      socket.on("message-recieved", ({ value, username }) => {
+        console.log("recieved");
+        dispatch({
+          type: CHAT_NEW_MESSAGE,
+          payload: { user: username, message: value },
+        });
+      });
     } catch (err) {}
   };
 
@@ -168,4 +177,8 @@ export const user_quit_room = (roomID) => async (dispatch) => {
   } catch (error) {
     console.log(error);
   }
+};
+
+export const send_message_to_room = (value) => async (dispatch) => {
+  socket.emit("message", { value: value });
 };

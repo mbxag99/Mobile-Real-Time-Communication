@@ -39,6 +39,7 @@ export default function App() {
           <Tab.Navigator
             screenOptions={({ route }) => ({
               headerShown: false,
+              tabBarHideOnKeyboard: true,
               tabBarIcon: ({ focused, color, size }) => {
                 let iconName;
                 let rn = route.name;

@@ -17,3 +17,5 @@ export const FLUSH = "FLUSH";
 export const LISTENER = "LISTENER";
 export const STREAMER = "STREAMER";
 export const FETCH_ALL_ROOMS = "FETCH_ALL_ROOMS";
+export const CHAT_NEW_MESSAGE = "CHAT_NEW_MESSAGE";
+export const FLUSH_ROOM_CHAT = "FLUSH_ROOM_CHAT";

@@ -40,6 +40,12 @@ io.on("connection", (socket) => {
     });
     io.to(roomId).emit("all-listeners", getRoomListeners(roomId));
 
+    socket.on("message", ({ value }) => {
+      io.to(roomId).emit("message-recieved", {
+        value: value,
+        username: userName,
+      });
+    });
     socket.on("user-disconnected", () => {
       console.log(`${userName} just left room ${roomId}`);
       socket.leave(roomId);
