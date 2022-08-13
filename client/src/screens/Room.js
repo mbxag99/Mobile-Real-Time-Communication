@@ -126,7 +126,7 @@ export default function Room({ navigation, route }) {
             <View
               style={{
                 display: "flex",
-                flex: 0.4,
+                flex: 0.6,
                 backgroundColor: "#73dcff",
               }}
             >
@@ -179,7 +179,7 @@ export default function Room({ navigation, route }) {
             <View
               style={{
                 display: "flex",
-                flex: 0.6,
+                flex: 0.4,
                 backgroundColor: "white",
               }}
             >
@@ -190,8 +190,8 @@ export default function Room({ navigation, route }) {
                   display: "flex",
                   flexDirection: "row",
                   flexWrap: "wrap",
-                  justifyContent: "space-around",
-                  alignItems: "center",
+                  justifyContent: "space-between",
+                  //alignItems: "",
                 }}
               >
                 {[...Array(RoomListeners.length)].map((user, index) => (

@@ -42,11 +42,11 @@ export default function ChatComponent() {
             height: WINDOW_HEIGHT - 175,
           }}
         >
-          {RoomChat.map((chatter) => (
-            <>
+          {RoomChat.map((chatter, Index) => (
+            <View key={Index}>
               <Text>{chatter.user} :</Text>
               <Text style={{ color: "red" }}>{chatter.message}</Text>
-            </>
+            </View>
           ))}
         </ScrollView>
         <KeyboardAvoidingView
@@ -65,11 +65,18 @@ export default function ChatComponent() {
             rightIcon={
               <Button
                 onPress={() => {
-                  dispatch(send_message_to_room(inputText));
-                  setInputText("");
+                  if (inputText.length > 0) {
+                    dispatch(send_message_to_room(inputText));
+                    setInputText("");
+                  }
                 }}
               />
             }
+            rightIconContainerStyle={{
+              height: 50,
+              width: 50,
+              backgroundColor: "rgba(52, 52, 52, 0.8)",
+            }}
             value={inputText}
             onChangeText={(value) => {
               setInputText(value);

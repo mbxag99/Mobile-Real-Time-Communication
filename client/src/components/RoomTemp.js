@@ -72,11 +72,25 @@ export default function RoomTemp({
 function FAST({ navigation, id, caption, numParticipants, tags }) {
   return (
     <>
+      <Text
+        style={{
+          backgroundColor: "rgba(52, 52, 52, 0.2)",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        {id}
+      </Text>
       <View style={{ flex: 1, justifyContent: "center" }}>
-        <Text style={{ backgroundColor: "red" }}>{id}</Text>
-        <Text style={{ backgroundColor: "red" }}>{caption}</Text>
-        <Text style={{ backgroundColor: "red" }}>{numParticipants}</Text>
-        <Text style={{ backgroundColor: "red" }}>{tags}</Text>
+        <Text style={{ backgroundColor: "rgba(3, 232, 249, 0.3)" }}>
+          Caption: {caption}
+        </Text>
+        <Text style={{ backgroundColor: "rgba(3, 232, 249, 0.3)" }}>
+          #Participants: {numParticipants}
+        </Text>
+        <Text style={{ backgroundColor: "rgba(3, 232, 249, 0.3)" }}>
+          TAGS: {tags}
+        </Text>
       </View>
       <TouchableOpacity
         style={{ backgroundColor: "rgba(52, 52, 52, 0.8)" }}

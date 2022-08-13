@@ -25,6 +25,8 @@ const Tab = createBottomTabNavigator();
 export default function App() {
   const dispatch = useDispatch();
   // React-Native,Redux,nodejs,expressjs,peerjs,socket io,NoSQL database(lokijs)
+  /// npx react-native start , nodemon run
+  // [If an error occurs] for physical devices, 'adb reverse tcp:8081 tcp:8081'
   return (
     <>
       <StatusBar backgroundColor={"black"} />
