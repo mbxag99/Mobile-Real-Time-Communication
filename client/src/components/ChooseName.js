@@ -17,15 +17,25 @@ export default function ChooseName({
         justifyContent: "space-evenly",
         flexDirection: "column",
         alignContent: "center",
+        backgroundColor: "black",
       }}
     >
       <Input
-        placeholder="Choose Name"
+        style={{ color: "white", fontSize: 30 }}
+        placeholder="Choose a Name"
         onChangeText={(value) => NameSitter(value)}
       />
       <CheckBox
+        containerStyle={{
+          backgroundColor: "black",
+          borderColor: "black",
+        }}
+        textStyle={{
+          color: "white",
+          fontSize: 20,
+        }}
         center
-        title="Enter as listener"
+        title="Enter as a listener"
         checkedIcon="dot-circle-o"
         uncheckedIcon="circle-o"
         checked={asListener}

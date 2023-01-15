@@ -12,8 +12,7 @@ const IndexScreenNavigator = ({ navigation }) => {
   useEffect(() => {
     navigation.addListener("tabPress", (e) => {
       console.log("registered");
-      dispatch({ type: "START_ROOM_LOADING" });
-      dispatch(get_all_rooms());
+      dispatch(get_all_rooms({ category: "Science" }));
     });
   }, []);
 

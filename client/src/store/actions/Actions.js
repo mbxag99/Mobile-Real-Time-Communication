@@ -18,6 +18,7 @@ import {
   FETCH_ROOM_LISTENERS,
   FETCH_ALL_ROOMS,
   CHAT_NEW_MESSAGE,
+  START_LOADING,
 } from "../constants";
 import { flushSync } from "react-dom";
 
@@ -104,6 +105,8 @@ export const join_Room =
           payload: { user: username, message: value },
         });
       });
+
+      // socket.on("user-options-update", (options) => {});
     } catch (err) {}
   };
 
@@ -143,12 +146,14 @@ export const create_new_room = (RoomData) => async (dispatch) => {
   }
 };
 
-export const get_all_rooms = () => async (dispatch) => {
+export const get_all_rooms = (data) => async (dispatch) => {
   try {
-    await axios.get(`${API_URI}rooms/get_all_rooms`).then((response) => {
+    dispatch({ type: "START_ROOM_LOADING" });
+    await axios.post(`${API_URI}rooms/get_all_rooms`, data).then((response) => {
       console.log(response.data);
       dispatch({ type: FETCH_ALL_ROOMS, payload: response.data });
     });
+    dispatch({ type: "END_ROOM_LOADING" });
   } catch (error) {
     console.log(error);
   }
@@ -181,4 +186,8 @@ export const user_quit_room = (roomID) => async (dispatch) => {
 
 export const send_message_to_room = (value) => async (dispatch) => {
   socket.emit("message", { value: value });
+};
+
+export const new_video_options = (options) => async (dispatch) => {
+  socket.emit("new_video_options", options);
 };

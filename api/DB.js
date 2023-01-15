@@ -4,7 +4,18 @@ var rooms = roomsDB.addCollection("rooms");
 
 export const get_all_rooms = async (req, res) => {
   try {
-    const All = await rooms.find();
+    // from req.body we get the category field , rename it to category_elements
+    const category_elements = req.body.category;
+    if (category_elements == "All") {
+      const All = await rooms.find();
+      res.status(200).json(All);
+      return;
+    }
+    // category_elements = is an array which has all the desired categories
+    // finds all the rooms which have any of the category field elements in the category_elements array
+    const All = await rooms.find({
+      category: { $containsAny: category_elements },
+    });
     res.status(200).json(All);
   } catch (error) {
     res.status(404).json({ message: error });

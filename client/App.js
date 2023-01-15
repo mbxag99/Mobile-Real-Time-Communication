@@ -33,13 +33,25 @@ export default function App() {
       <SafeAreaView
         style={{
           flex: 1,
-          backgroundColor: "white",
+          backgroundColor: "black",
           paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
         }}
       >
         <NavigationContainer>
           <Tab.Navigator
             screenOptions={({ route }) => ({
+              tabBarBackground: () => {
+                return (
+                  <View
+                    style={{
+                      backgroundColor: "black",
+                      height: "100%",
+                      width: "100%",
+                    }}
+                  />
+                );
+              },
+              tabBarLabel: "",
               headerShown: false,
               tabBarHideOnKeyboard: true,
               tabBarIcon: ({ focused, color, size }) => {
@@ -56,11 +68,18 @@ export default function App() {
                     name={iconName}
                     type="ionicon"
                     size={size}
-                    color={color}
+                    color="white"
                   />
                 );
               },
-              tabBarStyle: {},
+              tabBarStyle: {
+                height: 60,
+                backgroundColor: "black",
+                borderTopColor: "black",
+                borderTopWidth: 0,
+                elevation: 0,
+                width: "100%",
+              },
             })}
             initialRouteName="Home"
           >

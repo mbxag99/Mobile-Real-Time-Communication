@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Dimensions, ScrollView, View } from "react-native";
-import { Text } from "react-native-elements";
+import { Dimensions, ScrollView, TouchableOpacity, View } from "react-native";
+import { Button, Text } from "react-native-elements";
 import { Icon, Avatar } from "react-native-elements";
 import { io } from "socket.io-client";
 import Peer from "react-native-peerjs";
@@ -25,6 +25,12 @@ export default function Room({ navigation, route }) {
   const { RoomListeners } = useSelector((state) => state.ListenReducer);
   const { myVideoStream, VideoStreams, RemoteVideoStreams, Loading } =
     useSelector((state) => state.MediaReducer);
+
+  const [streamLongPressed, setStreamLongPressed] = useState();
+  const [myStreamStatus, setMyStreamStatus] = useState({
+    video: true,
+    audio: true,
+  });
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -88,10 +94,12 @@ export default function Room({ navigation, route }) {
   };
   useEffect(() => {
     return () => {
-      console.log("Unmounted");
-      dispatch(disconnectFromRoom());
-      dispatch(user_quit_room(route.params.id));
-      dispatch({ type: FLUSH_ROOM_CHAT });
+      if (!justJoined) {
+        console.log("Unmounted");
+        dispatch(disconnectFromRoom());
+        dispatch(user_quit_room(route.params.id));
+        dispatch({ type: FLUSH_ROOM_CHAT });
+      }
     };
   }, []);
 
@@ -127,10 +135,25 @@ export default function Room({ navigation, route }) {
               style={{
                 display: "flex",
                 flex: 0.6,
-                backgroundColor: "#73dcff",
+                backgroundColor: "#4CAF50",
+                padding: 10,
               }}
             >
-              <Text>Chatting {route.params.id}</Text>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  backgroundColor: "#419c45",
+                  padding: 10,
+                  borderRadius: 10,
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>Chatting about</Text>
+                <Text style={{ fontSize: 23, color: "rgba(60, 49, 127, 1)" }}>
+                  {" "}
+                  {route.params.title}
+                </Text>
+              </View>
               <ScrollView
                 contentContainerStyle={{
                   flex: 1,
@@ -143,47 +166,161 @@ export default function Room({ navigation, route }) {
                 }}
               >
                 {!asListener ? (
-                  <RTCView
+                  <View
                     style={{
-                      width: 200,
-                      height: 200,
-                      backgroundColor: "black",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignContent: "center",
+                      alignItems: "center",
+                      flexDirection: "column",
                     }}
-                    streamURL={myVideoStream?.toURL()}
-                  />
+                  >
+                    <TouchableOpacity
+                      onLongPress={() => {
+                        if (streamLongPressed?.index == -1)
+                          setStreamLongPressed();
+                        else setStreamLongPressed({ index: -1 });
+                      }}
+                    >
+                      <RTCView
+                        style={{
+                          width: 200,
+                          height: 200,
+                          backgroundColor: "black",
+                        }}
+                        streamURL={myVideoStream?.toURL()}
+                      />
+                    </TouchableOpacity>
+                    {streamLongPressed != null &&
+                    streamLongPressed.index == -1 ? (
+                      <View
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-evenly",
+                          alignContent: "center",
+                          alignItems: "center",
+                          flexDirection: "row",
+                          backgroundColor: "rgba(0, 0, 0, .3)",
+                          height: 30,
+                          width: 200,
+                        }}
+                      >
+                        <Button
+                          onPress={() => {
+                            setMyStreamStatus((prev) =>
+                              prev.video == true
+                                ? {
+                                    ...prev,
+                                    video: false,
+                                  }
+                                : {
+                                    ...prev,
+                                    video: true,
+                                  }
+                            );
+                          }}
+                        />
+                        <Button
+                          onPress={() => {
+                            setMyStreamStatus((prev) =>
+                              prev.audio == true
+                                ? {
+                                    ...prev,
+                                    audio: false,
+                                  }
+                                : {
+                                    ...prev,
+                                    audio: true,
+                                  }
+                            );
+                          }}
+                        />
+                      </View>
+                    ) : null}
+                  </View>
                 ) : null}
                 {RemoteVideoStreams.map((RVS, index) => (
-                  <RTCView
-                    key={index}
-                    style={{
-                      width: 200,
-                      height: 200,
-                      backgroundColor: "black",
+                  <TouchableOpacity
+                    onLongPress={() => {
+                      setStreamLongPressed({ index: index, kind: "RVS" });
+                      console.log("long");
                     }}
-                    streamURL={RVS.Stream.toURL()}
-                  />
+                  >
+                    <RTCView
+                      key={index}
+                      style={{
+                        width: 200,
+                        height: 200,
+                        backgroundColor: "black",
+                      }}
+                      streamURL={RVS.Stream.toURL()}
+                    />
+                  </TouchableOpacity>
                 ))}
                 {VideoStreams.map((VS, index) => (
-                  <RTCView
-                    key={index + RemoteVideoStreams.length}
-                    style={{
-                      width: 200,
-                      height: 200,
-                      backgroundColor: "black",
+                  <TouchableOpacity
+                    onLongPress={() => {
+                      setStreamLongPressed({ index: index, kind: "VS" });
+                      console.log("long");
                     }}
-                    streamURL={VS.Stream.toURL()}
-                  />
+                  >
+                    <RTCView
+                      key={index + RemoteVideoStreams.length}
+                      style={{
+                        width: 200,
+                        height: 200,
+                        backgroundColor: "black",
+                      }}
+                      streamURL={VS.Stream.toURL()}
+                    />
+                  </TouchableOpacity>
                 ))}
               </ScrollView>
+            </View>
+            {/* add right arrow icon that is connected between these sections*/}
+            <View
+              style={{
+                padding: 10,
+                display: "flex",
+                alignItems: "flex-end",
+                zIndex: 1,
+                backgroundColor: "rgba(100, 49, 250, 1)",
+                width: "10%",
+                position: "absolute",
+                // put this in the middle of the screen
+                top: WINDOW_HEIGHT / 2 - 10,
+                right: 0,
+              }}
+            >
+              <Icon name="comments" type="font-awesome" color="white" />
+              <Icon
+                name="arrow-right"
+                type="font-awesome"
+                color="white"
+                size={20}
+              />
             </View>
             <View
               style={{
                 display: "flex",
                 flex: 0.4,
-                backgroundColor: "white",
+                padding: 10,
               }}
             >
-              <Text>Listening</Text>
+              <Text
+                style={{
+                  fontSize: 20,
+                  color: "black",
+                  padding: 5,
+                  backgroundColor: "#f2eded",
+                  borderRadius: 5,
+                  borderColor: "grey",
+                  borderWidth: 0.1,
+                  width: "25%",
+                }}
+              >
+                Listening
+              </Text>
               <ScrollView
                 contentContainerStyle={{
                   flex: 0.8,
@@ -191,18 +328,30 @@ export default function Room({ navigation, route }) {
                   flexDirection: "row",
                   flexWrap: "wrap",
                   justifyContent: "space-between",
+                  margin: 10,
                   //alignItems: "",
                 }}
               >
                 {[...Array(RoomListeners.length)].map((user, index) => (
-                  <Avatar
+                  <View
                     key={index}
-                    rounded
-                    icon={{ name: "user", type: "font-awesome" }}
-                    activeOpacity={0.7}
-                    containerStyle={{ backgroundColor: "purple" }}
-                    title={user?.username}
-                  />
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Avatar
+                      key={index}
+                      rounded
+                      icon={{ name: "user", type: "font-awesome" }}
+                      activeOpacity={0.7}
+                      containerStyle={{ backgroundColor: "purple" }}
+                      title={name[0]}
+                      size="medium"
+                    />
+                    <Text style={{ fontSize: 20, color: "black" }}>{name}</Text>
+                  </View>
                 ))}
               </ScrollView>
               <View

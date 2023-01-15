@@ -7,7 +7,7 @@ export default (state = { Rooms: [], LoadingRooms: true }, action) => {
     case "END_ROOM_LOADING":
       return { ...state, LoadingRooms: false };
     case FETCH_ALL_ROOMS:
-      return { ...state, Rooms: action.payload, LoadingRooms: false };
+      return { ...state, Rooms: action.payload };
     default:
       return state;
   }

@@ -27,7 +27,7 @@ export default function ChatComponent() {
     >
       <View
         style={{
-          backgroundColor: "#4c69a5",
+          backgroundColor: "rgba(52, 52, 52, 0.8)",
           flex: 1,
           alignItems: "center",
           justifyContent: "space-evenly",
@@ -36,34 +36,63 @@ export default function ChatComponent() {
       >
         <ScrollView
           contentContainerStyle={{
-            borderWidth: 5,
-            borderColor: "grey",
+            borderWidth: 10,
+            borderColor: "rgba(52, 52, 52, 0.8)",
             width: WINDOW_WIDTH,
-            height: WINDOW_HEIGHT - 175,
+            backgroundColor: "#303030",
+            padding: 10,
           }}
         >
           {RoomChat.map((chatter, Index) => (
-            <View key={Index}>
-              <Text>{chatter.user} :</Text>
-              <Text style={{ color: "red" }}>{chatter.message}</Text>
+            <View key={Index} style={{ flexDirection: "row" }}>
+              <Text style={{ fontSize: 30, color: "#212121" }}>
+                {chatter.user}:
+              </Text>
+              <Text
+                style={{
+                  color: /* rand color for each */ `rgb(${
+                    Math.random() * 100
+                  },0,0)`,
+                  fontSize: 30,
+                }}
+              >
+                {" "}
+                {chatter.message}
+              </Text>
             </View>
           ))}
         </ScrollView>
         <KeyboardAvoidingView
           behavior="padding"
+          /* keyboardVerticalOffset={100} */
+          keyboardVerticalOffset={20}
           style={{
             width: WINDOW_WIDTH,
-            backgroundColor: "grey",
+            backgroundColor: "rgba(52, 52, 52, 0.8)",
           }}
         >
           <Input
+            onSubmitEditing={() => {
+              if (inputText.length > 0) {
+                dispatch(send_message_to_room(inputText));
+                setInputText("");
+              }
+            }}
+            style={{
+              width: WINDOW_WIDTH,
+              backgroundColor: "white",
+              padding: 10,
+            }}
             placeholder="Chat"
             leftIcon={{
               type: "font-awesome",
               name: "comment",
+              color: "white",
             }}
             rightIcon={
-              <Button
+              <Icon
+                name="send"
+                color="white"
                 onPress={() => {
                   if (inputText.length > 0) {
                     dispatch(send_message_to_room(inputText));

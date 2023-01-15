@@ -36,6 +36,6 @@
         <data android:scheme="com.akray"/>
       </intent-filter>
     </activity>
-    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>
+    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>  
   </application>
 </manifest>

@@ -8,7 +8,7 @@ import {
 
 const router = express.Router();
 //http://localhost:3001/rooms/get_all_rooms
-router.get("/get_all_rooms", get_all_rooms);
+router.post("/get_all_rooms", get_all_rooms);
 
 //http://localhost:3001/rooms/create_room
 router.post("/create_new_room", create_new_room);
